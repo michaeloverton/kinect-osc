@@ -29,6 +29,7 @@ float xAngle = 0;
 float yAngle = 0;
 
 int pointMode = 0;
+int resetRotations = 0; 
 
 // randomizer (autopilot)
 int randomCounter = 0;
@@ -79,7 +80,7 @@ void draw() {
 
   // Rotate
   //a += 0.03f;
-  println("x rotate " + xRotate);
+//  println("x rotate " + xRotate);
   if(xRotate > 10000000000000f) {
     xRotate = 0.0025f;
   }
@@ -88,6 +89,8 @@ void draw() {
   }
   xAngle += xRotate;
   yAngle += yRotate;
+  
+  
   
   // Scaling mod
   if(scalingFactor > maxScale) {
@@ -109,8 +112,16 @@ void createPointCloud(float xLoc, float yLoc, float zLoc) {
   // Translate and rotate
   translate(xLoc, yLoc, zLoc);
   //ROTATE!!
-  rotateY(yAngle);
-  rotateX(xAngle);
+  if(resetRotations == 1) {
+    rotateY(-1 * yAngle);
+    rotateX(-1 * xAngle);
+    yAngle = 0;
+    xAngle = 0;
+  }
+  else {
+    rotateY(yAngle);
+    rotateX(xAngle);
+  }
   
   if(randomColor == 1) {
     randomRed = round(random(0,255));
@@ -179,11 +190,11 @@ void oscEvent(OscMessage theOscMessage) {   //  This runs whenever there is a ne
   String addr = theOscMessage.addrPattern();  //  Creates a string out of the OSC message
 
   if (addr.indexOf("/fader9/scalingFactor") !=-1) {  
-    scalingFactor = int(theOscMessage.get(0).floatValue()) * 20;
+    scalingFactor = int(theOscMessage.get(0).floatValue()) * 15;
     println("sending scaling factor value " + scalingFactor);
   }
   if (addr.indexOf("/fader9/maxScale") !=-1) {  
-    maxScale = int(theOscMessage.get(0).floatValue()) * 20;
+    maxScale = int(theOscMessage.get(0).floatValue()) * 15;
     println("sending maxScale value " + maxScale);
   }
   if (addr.indexOf("/fader9/scalingRate") !=-1) {  
@@ -222,7 +233,11 @@ void oscEvent(OscMessage theOscMessage) {   //  This runs whenever there is a ne
     randomEverything = int(theOscMessage.get(0).floatValue());
   }
   if (addr.indexOf("/fader9/pointMode") !=-1) {  
-    pointMode = int(theOscMessage.get(0).floatValue());
+    pointMode = int(theOscMessage.get  (0).floatValue());
     println("pointMode " + pointMode);
+  }
+  if (addr.indexOf("/fader9/resetRotations") != -1) { 
+    resetRotations = int(theOscMessage.get(0).floatValue());
+    println("resetRotations " + resetRotations);
   }
 }
