@@ -30,6 +30,7 @@ float yAngle = 0;
 
 int pointMode = 0;
 int resetRotations = 0; 
+int aggRotations = 0;
 
 // randomizer (autopilot)
 int randomCounter = 0;
@@ -87,10 +88,14 @@ void draw() {
   if(yRotate > 10000000000000f) {
     yRotate = 0.0025f;
   }
-  xAngle += xRotate;
-  yAngle += yRotate;
   
-  
+  if (aggRotations == 1) {
+    xAngle += xRotate;
+    yAngle += yRotate;
+  } else {
+    xAngle = xRotate;
+    yAngle = yRotate;
+  }
   
   // Scaling mod
   if(scalingFactor > maxScale) {
@@ -129,8 +134,8 @@ void createPointCloud(float xLoc, float yLoc, float zLoc) {
     randomBlue = round(random(0,255));
   }
     
-  fill(randomRed,randomGreen,randomBlue);
-  stroke(randomRed,randomGreen,randomBlue);
+  fill(randomRed, randomGreen, randomBlue);
+  stroke(randomRed, randomGreen, randomBlue);
 
   for (int x = 0; x < kinect.width; x += xSkip) {
     for (int y = 0; y < kinect.height; y += ySkip) {
@@ -239,5 +244,9 @@ void oscEvent(OscMessage theOscMessage) {   //  This runs whenever there is a ne
   if (addr.indexOf("/fader9/resetRotations") != -1) { 
     resetRotations = int(theOscMessage.get(0).floatValue());
     println("resetRotations " + resetRotations);
+  }
+  if (addr.indexOf("/fader9/aggRotations") != -1) { 
+    aggRotations = int(theOscMessage.get(0).floatValue());
+    println("resetRotations " + aggRotations);
   }
 }
